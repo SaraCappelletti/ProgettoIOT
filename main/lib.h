@@ -9,26 +9,26 @@
 #define B3 6
 #define B4 7
 #define LR 9
-#define LG4 10
-#define LG3 11
-#define LG2 12
-#define LG1 13
+#define LG1 10
+#define LG2 11
+#define LG3 12
+#define LG4 13
 #define POT A0
 #define T1 2000
 
+void setInterrupts();
 
+void turnOffLeds();
 
-void turnOffLeds(int leds[]);
+void fadingRed(int fadeTime);
 
-void fadingRed(int fadeTime, int fadeAmount);
-
-void changeState();
+void nextState();
 
 void checkPressedButtons(int pressed[]);
 
-void createAndDisplayPatterns();
+void createAndDisplayPattern();
 
-void initialState(int leds[]);
+void initialState();
 
 void waitForPlayer(int preSleepTime);
 
@@ -36,13 +36,17 @@ void startGame();
 
 void runGame();
 
-void showPattern();
+void waitAndHidePattern();
 
 void inputFromButton();
 
 void penality();
 
+void showPoint();
+
 void checkInputs();
+
+void endGame();
 
 void check();
 

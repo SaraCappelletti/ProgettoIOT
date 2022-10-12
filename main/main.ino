@@ -1,5 +1,6 @@
 #include "lib.h"
 
+
 int state = 0; //0 beforegame, 1 gamestart, 2 insertion, 3 control
 int leds[4] = {LG1, LG2, LG3, LG4};
 int buttons[4] = {B1, B2, B3, B4};
@@ -9,13 +10,15 @@ int t2 = 3000;
 int t3 = 3000;
 int tr = 1000;
 int f = 250;
-int preSleepTime = 10000;
-int fadeTime = 20000;
+int preSleepTime = 5000;
+int fadeTime = 20;
 int fadeAmount = 5;
 int currentIntensity = 0;
 unsigned long time = 0;
-int prevleds[4] = {LOW, LOW, LOW, LOW};
-int pressbutt[4] = {LOW, LOW, LOW, LOW};
+int prevLeds[4] = {LOW, LOW, LOW, LOW};
+int pressButt[4] = {LOW, LOW, LOW, LOW};
+
+int newGame = 1;
 
 void setup() {
   Serial.begin(9600);
@@ -28,23 +31,19 @@ void setup() {
   pinMode(LG3, OUTPUT);
   pinMode(LG4, OUTPUT);
   pinMode(LR, OUTPUT);
-  randomSeed(analogRead(0));
-  attachInterrupt(digitalPinToInterrupt(B1), check, RISING);
-  attachInterrupt(digitalPinToInterrupt(B2), check, RISING);
-  attachInterrupt(digitalPinToInterrupt(B3), check, RISING);
-  attachInterrupt(digitalPinToInterrupt(B4), check, RISING);
+  randomSeed(analogRead(5));
+  setInterrupts();
 }
 
 void loop() {
   switch (state) {
     case 0:{
-      initialState(leds);
-      changeState();
+      initialState();
       break;
     }
     case 1:{
+      fadingRed(fadeTime);
       waitForPlayer(preSleepTime);
-      fadingRed(fadeTime, fadeAmount);
       break;
     }
     case 2:{
@@ -56,7 +55,7 @@ void loop() {
       break;
     }
     case 4:{
-      showPattern();
+      waitAndHidePattern();
       break;
     }
     case 5:{
@@ -65,6 +64,10 @@ void loop() {
     }
     case 6:{
       checkInputs();
+      break;
+    }
+    case 7:{
+      showPoint();
       break;
     }
   }
