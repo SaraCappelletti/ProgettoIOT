@@ -6,11 +6,11 @@ int leds[4] = {LG1, LG2, LG3, LG4};
 int buttons[4] = {B1, B2, B3, B4};
 int score = 0;
 int penalities = 0;
-int t2 = 3000;
-int t3 = 3000;
+//int t2 = 3000;
+//int t3 = 3000;
 int tr = 1000;
-int f = 250;
-int preSleepTime = 5000;
+int f = 100;
+int preSleepTime = 10000;
 int fadeTime = 20;
 int fadeAmount = 5;
 int currentIntensity = 0;
@@ -67,6 +67,7 @@ void loop() {
     }
     case 1:{
       fadingRed(fadeTime);
+      setDifficulty();
       waitForPlayer(preSleepTime);
       break;
     }
@@ -92,6 +93,10 @@ void loop() {
     }
     case 7:{
       showPoint();
+      break;
+    }
+    case 8:{
+      endGame();
       break;
     }
   }

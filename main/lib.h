@@ -15,8 +15,12 @@
 #define LG4 13
 #define POT A0
 #define T1 2000
+#define T2 3000
+#define T3 3000
 
 void setInterrupts();
+
+void setDifficulty();
 
 void turnOffLeds();
 
