@@ -15,6 +15,7 @@ extern int t2;
 extern int t3;
 extern int fadeAmount;
 extern int newRound;
+extern int newSleep;
 
 void setInterrupts(){
   for(int i = 0; i < 4; i++){
@@ -89,6 +90,7 @@ void initialState(){
   turnOffLeds();
   fflush(stdout);
   Serial.println("\nWelcome to Catch the Led Pattern Game. Press Key T1 to Start");
+  fflush(stdout);
   newRound = 1;
   score = 0;
   penalities = 0;
@@ -98,9 +100,9 @@ void initialState(){
 
 void waitForPlayer(int preSleepTime){
   static unsigned long waitTime = millis();
-  if(newRound){
+  if(newSleep){
     waitTime = millis();
-    newRound = 0;
+    newSleep = 0;
   }
   if(millis() - waitTime >= preSleepTime){
     waitTime = millis();
@@ -110,6 +112,7 @@ void waitForPlayer(int preSleepTime){
     sleep_mode();
     state = 1;
     newRound = 1;
+    newSleep = 1;
     //waitTime = millis();
   }
 }
@@ -232,7 +235,7 @@ void check(){
   }
   else {
     penality();
-    delay(30);
+    delay(50);
   }
   //Serial.println("-------------------------------------------------------------");
 }

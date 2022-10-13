@@ -19,6 +19,7 @@ int prevLeds[4] = {LOW, LOW, LOW, LOW};
 int pressButt[4] = {LOW, LOW, LOW, LOW};
 
 int newRound = 1;
+int newSleep = 1;
 
 void setup() {
   Serial.begin(9600);
