@@ -18,7 +18,7 @@ unsigned long time = 0;
 int prevLeds[4] = {LOW, LOW, LOW, LOW};
 int pressButt[4] = {LOW, LOW, LOW, LOW};
 
-int newGame = 1;
+int newRound = 1;
 
 void setup() {
   Serial.begin(9600);
@@ -38,6 +38,29 @@ void setup() {
 void loop() {
   switch (state) {
     case 0:{
+/*
+      Serial.println("LEDS ");
+      for (int i = 0; i < 4; i++)
+        Serial.println(leds[i]);
+      
+      Serial.println("BUTTONS ");
+      for (int i = 0; i < 4; i++)
+        Serial.println(buttons[i]);
+
+      Serial.print("SCORE ");
+      Serial.println(score);
+
+      Serial.print("PENALITIES ");
+      Serial.println(penalities);
+
+      Serial.println("PREV_LEDS ");
+      for (int i = 0; i < 4; i++)
+        Serial.println(prevLeds[i]);
+
+      Serial.println("PRESSED_BUTTS ");
+      for (int i = 0; i < 4; i++)
+        Serial.println(pressButt[i]);
+*/
       initialState();
       break;
     }

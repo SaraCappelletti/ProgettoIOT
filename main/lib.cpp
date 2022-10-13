@@ -14,7 +14,7 @@ extern int f;
 extern int t2;
 extern int t3;
 extern int fadeAmount;
-extern int newGame;
+extern int newRound;
 
 void setInterrupts(){
   for(int i = 0; i < 4; i++){
@@ -30,9 +30,9 @@ void turnOffLeds() {
 
 void fadingRed(int fadeTime){  //VA
   static unsigned long actualTime = millis();
-  if(newGame){
+  if(newRound){
     actualTime = millis();
-    newGame = 0;
+    newRound = 0;
   }
   if(millis() - actualTime >= fadeTime){
     actualTime = millis();
@@ -46,8 +46,8 @@ void fadingRed(int fadeTime){  //VA
 
 void nextState(){
   state = (state + 1) % 8;
-  Serial.println(state);
-  newGame = 1;
+  //Serial.println(state);
+  newRound = 1;
 }
 
 /*void checkPressedButtons(int pressed[]){
@@ -63,9 +63,9 @@ void nextState(){
 
 void createAndDisplayPattern(){
   static unsigned long waitTime = millis();
-  if(newGame){
+  if(newRound){
     waitTime = millis();
-    newGame = 0;
+    newRound = 0;
   }
   int numOn = 0;
   if(millis() - waitTime >= T1){
@@ -87,24 +87,29 @@ void createAndDisplayPattern(){
 
 void initialState(){
   turnOffLeds();
+  fflush(stdout);
   Serial.println("\nWelcome to Catch the Led Pattern Game. Press Key T1 to Start");
+  newRound = 1;
+  score = 0;
+  penalities = 0;
   nextState();
 
 }
 
 void waitForPlayer(int preSleepTime){
   static unsigned long waitTime = millis();
-  if(newGame){
+  if(newRound){
     waitTime = millis();
-    newGame = 0;
+    newRound = 0;
   }
   if(millis() - waitTime >= preSleepTime){
+    waitTime = millis();
     digitalWrite(LR, LOW);
     set_sleep_mode(SLEEP_MODE_PWR_DOWN);
     sleep_enable();
     sleep_mode();
     state = 1;
-    newGame = 1;
+    newRound = 1;
     //waitTime = millis();
   }
 }
@@ -117,21 +122,21 @@ void startGame(){
 
 void runGame(){
   static unsigned long waitTime = millis();
-  if(newGame){
+  if(newRound){
     waitTime = millis();
-    newGame = 0;
+    newRound = 0;
   }
   if(millis() - waitTime >= T1){
-    //newGame = 1;
+    //newRound = 1;
     createAndDisplayPattern();
   }
 }
 
 void waitAndHidePattern(){
   static unsigned long waitTime = millis();
-  if(newGame){
+  if(newRound){
     waitTime = millis();
-    newGame = 0;
+    newRound = 0;
   }
   if(millis() - waitTime >= t2){
     for(int i = 0; i < 4; i++){
@@ -143,9 +148,9 @@ void waitAndHidePattern(){
 
 void inputFromButton(){
   static unsigned long waitTime = millis();
-  if(newGame){
+  if(newRound){
     waitTime = millis();
-    newGame = 0;
+    newRound = 0;
   }
   if(millis() - waitTime >= t3){
     nextState();
@@ -155,16 +160,20 @@ void inputFromButton(){
 void penality(){
   penalities++;
   digitalWrite(LR, HIGH);
+  for(int i = 0; i < 4; i++) {
+    turnOffLeds();
+    prevLeds[i] = LOW;
+    pressButt[i] = LOW; 
+  }
   Serial.println("Penality!");
-  //noInterrupts();
   delay(1000);
-  //interrupts();
   digitalWrite(LR, LOW);
   if(penalities >= 3){
     endGame();
   } else {
+    //Serial.println("prova");
     state = 3;
-    newGame = 1;
+    newRound = 1;
   }
 }
 
@@ -174,7 +183,7 @@ void showPoint(){
   Serial.print("New Point! Score: ");
   Serial.println(score);
   state = 3;
-  newGame = 1;
+  newRound = 1;
   t2 -= f;
   t3 -= f;
 }
@@ -182,10 +191,9 @@ void showPoint(){
 void checkInputs(){
   for(int i = 0; i < 4; i++){
     if(pressButt[i] != prevLeds[i]){
-      Serial.println(pressButt[i]);
-      Serial.println(prevLeds[i]);
+      //Serial.println(pressButt[i]);
+      //Serial.println(prevLeds[i]);
       penality();
-      nextState();
       return;
     }
   }
@@ -196,21 +204,25 @@ void endGame(){
   Serial.print("Game Over. Final Score: ");
   Serial.println(score);
   state = 0;
-  newGame = 1;
-  score = 0;
-  penalities = 0;
 }
 
 void check(){
   //int pressed[4];
   //checkPressedButtons(pressed);
+  /*Serial.println("-------------------------------------------------------------");
+  Serial.print("State ");Serial.println(state);
+  Serial.print("B1 ");Serial.println(digitalRead(B1));
+  Serial.print("B2 ");Serial.println(digitalRead(B2));
+  Serial.print("B3 ");Serial.println(digitalRead(B3));
+  Serial.print("B4 ");Serial.println(digitalRead(B4));*/
   if(state == 1){ //starting game
     if(arduinoInterruptedPin == B1){
       nextState();
     }
     sleep_disable();
+    //return;
   }
-  if(state == 5){ //collect results
+  else if(state == 5){ //collect results
     for(int i = 0; i < 4; i++){
       if(buttons[i] == arduinoInterruptedPin){
         pressButt[i] = HIGH;
@@ -220,7 +232,9 @@ void check(){
   }
   else {
     penality();
+    delay(30);
   }
+  //Serial.println("-------------------------------------------------------------");
 }
 
 
