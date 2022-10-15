@@ -24,7 +24,7 @@ int t3;
 //problema di bouncing
 //sleep che entra a caso nella nuova partita
 //stampa pre sleep mode OPZIONALE
-//funzione setState che ci cambia le variabili, prende un intero
+//togliere tutte le Println
 
 void setInterrupts(){
   for(int i = 0; i < 4; i++){
@@ -61,9 +61,12 @@ void fadingRed(int fadeTime){
   }
 }
 
-void nextState(){
-  state = (state + 1) % 9;
+void setState(int newState){
+  state = newState;
   newRound = 1;
+  if(newSleep != 1){
+    newSleep = 1;
+  }
 }
 
 void createAndDisplayPattern(){
@@ -86,7 +89,7 @@ void createAndDisplayPattern(){
     if(numOn == 0){ //se tutti i led sono casualmente spenti accendo il primo
       digitalWrite(LG1, HIGH);
     }
-    nextState();
+    setState(state + 1);
   }
 }
 
@@ -95,12 +98,11 @@ void initialState(){
   fflush(stdout);
   Serial.println("\nWelcome to Catch the Led Pattern Game. Press Key T1 to Start");
   fflush(stdout);
-  newRound = 1;
   score = 0;
   penalities = 0;
   t2 = T2;
   t3 = T3;
-  nextState();
+  setState(state + 1);
 
 }
 
@@ -117,9 +119,7 @@ void waitForPlayer(int preSleepTime){
     set_sleep_mode(SLEEP_MODE_PWR_DOWN);
     sleep_enable();
     sleep_mode();
-    state = 1;
-    newRound = 1;
-    newSleep = 1;
+    setState(1);
   }
 }
 
@@ -128,7 +128,7 @@ void startGame(){
   Serial.print("You choose difficulty: ");
   Serial.println((f % 100) + 1);
   Serial.println("Go!");
-  nextState();
+  setState(state + 1);
 }
 
 void runGame(){
@@ -138,7 +138,6 @@ void runGame(){
     newRound = 0;
   }
   if(millis() - waitTime >= T1){
-    //newRound = 1;
     createAndDisplayPattern();
   }
 }
@@ -153,7 +152,7 @@ void waitAndHidePattern(){
     for(int i = 0; i < 4; i++){
       digitalWrite(leds[i], LOW);
     }
-    nextState();
+    setState(state + 1);
   }
 }
 
@@ -164,7 +163,7 @@ void inputFromButton(){
     newRound = 0;
   }
   if(millis() - waitTime >= t3){
-    nextState();
+    setState(state + 1);
   }
 }
 
@@ -181,11 +180,9 @@ void penality(){
   delay(1000);
   digitalWrite(LR, LOW);
   if(penalities >= 3){
-    newRound = 1;
-    state = 8;
+    setState(8);
   } else {
-    state = 3;
-    newRound = 1;
+    setState(3);
   }
 }
 
@@ -194,8 +191,7 @@ void showPoint(){
   score ++;
   Serial.print("New Point! Score: ");
   Serial.println(score);
-  state = 3;
-  newRound = 1;
+  setState(3);
   t2 -= f;
   t3 -= f;
 }
@@ -207,26 +203,43 @@ void checkInputs(){
       return;
     }
   }
-  nextState();
+  setState(state + 1);
 }
 
 void endGame(){
-  static unsigned long waitTime = millis();
+  static unsigned long waitTime = micros();
   Serial.print("Game Over. Final Score: ");
   Serial.println(score);
   if(newRound){
-    waitTime = millis();
+    waitTime = micros();
     newRound = 0;
   }
-  if(millis() - waitTime >= 10000){
-    state = 0;
+  Serial.println(micros()-waitTime);
+  if(micros() - waitTime >= 5000000){
+    setState(0);
+    Serial.print("SCORE ");
+    Serial.println(score);
+
+    Serial.print("PENALITIES ");
+    Serial.println(penalities);
+
+    Serial.print("STATE");
+    Serial.println(state);
+
+    Serial.println("PREV_LEDS ");
+    for (int i = 0; i < 4; i++)
+      Serial.println(prevLeds[i]);
+
+    Serial.println("PRESSED_BUTTS ");
+    for (int i = 0; i < 4; i++)
+      Serial.println(pressButt[i]);
   }
 }
 
 void check(){
   if(state == 1){ //starting game
     if(arduinoInterruptedPin == B1){
-      nextState();
+      setState(state + 1);
     }
     sleep_disable();
     //return;

@@ -26,7 +26,7 @@ void turnOffLeds();
 
 void fadingRed(int fadeTime);
 
-void nextState();
+void setState(int newState);
 
 void checkPressedButtons(int pressed[]);
 

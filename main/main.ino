@@ -39,14 +39,6 @@ void setup() {
 void loop() {
   switch (state) {
     case 0:{
-/*
-      Serial.println("LEDS ");
-      for (int i = 0; i < 4; i++)
-        Serial.println(leds[i]);
-      
-      Serial.println("BUTTONS ");
-      for (int i = 0; i < 4; i++)
-        Serial.println(buttons[i]);
 
       Serial.print("SCORE ");
       Serial.println(score);
@@ -61,7 +53,7 @@ void loop() {
       Serial.println("PRESSED_BUTTS ");
       for (int i = 0; i < 4; i++)
         Serial.println(pressButt[i]);
-*/
+
       initialState();
       break;
     }
