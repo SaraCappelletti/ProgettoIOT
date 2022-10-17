@@ -48,6 +48,9 @@ void fadingRed();
 /*Set the state of the game to the newState value*/
 void setState(int newState);
 
+/*Return true if waitTime is passed*/
+bool timer(int waitTime);
+
 /*Create a new random sequence of leds, fills up prevLeds and turn the new sequence on*/
 void createAndDisplayPattern();
 

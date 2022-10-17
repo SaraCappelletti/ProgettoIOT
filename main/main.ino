@@ -1,3 +1,5 @@
+//Authors: Cappelletti Sara, Beleffi Leonardo
+
 #include "lib.h"
 
 bool hasPenality = false;

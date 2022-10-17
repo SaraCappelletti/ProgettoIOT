@@ -20,6 +20,7 @@ extern int newSleep;
 
 int t2;
 int t3;
+unsigned long prevTime;;
 
 void setInterrupts() {
   for (int i = 0; i < 4; i++) {
@@ -64,14 +65,17 @@ void setState(int newState) {
   }
 }
 
-void createAndDisplayPattern() {
-  static unsigned long waitTime = millis();
+bool timer(int waitTime){
   if (newRound) {
-    waitTime = millis();
+    prevTime = millis();
     newRound = 0;
   }
+  return millis() - prevTime >= waitTime;
+}
+
+void createAndDisplayPattern() {
   int numOn = 0;
-  if (millis() - waitTime >= T1) {
+  if (timer(T1)) {
     for (int i = 0; i < 4; i++) {
       prevLeds[i] = LOW;
       pressButt[i] = LOW;
@@ -104,13 +108,12 @@ void initialState() {
 }
 
 void waitForPlayer() {
-  static unsigned long waitTime = millis();
   if (newSleep) {
-    waitTime = millis();
+    prevTime = millis();
     newSleep = 0;
   }
-  if (millis() - waitTime >= PRE_SLEEP_TIME) {
-    waitTime = millis();
+  if (millis() - prevTime >= PRE_SLEEP_TIME) {
+    prevTime = millis();
     digitalWrite(LR, LOW);
     set_sleep_mode(SLEEP_MODE_PWR_DOWN);
     sleep_enable();
@@ -128,23 +131,13 @@ void startGame() {
 }
 
 void runGame() {
-  static unsigned long waitTime = millis();
-  if (newRound) {
-    waitTime = millis();
-    newRound = 0;
-  }
-  if (millis() - waitTime >= T1) {
+  if (timer(T1)) {
     createAndDisplayPattern();
   }
 }
 
 void waitAndHidePattern() {
-  static unsigned long waitTime = millis();
-  if (newRound) {
-    waitTime = millis();
-    newRound = 0;
-  }
-  if (millis() - waitTime >= t2) {
+  if (timer(t2)) {
     for (int i = 0; i < 4; i++) {
       digitalWrite(leds[i], LOW);
     }
@@ -153,12 +146,7 @@ void waitAndHidePattern() {
 }
 
 void inputFromButton() {
-  static unsigned long waitTime = millis();
-  if (newRound) {
-    waitTime = millis();
-    newRound = 0;
-  }
-  if (millis() - waitTime >= t3) {
+  if (timer(t3)) {
     setState(state + 1);
   }
 }
@@ -198,12 +186,7 @@ void checkInputs() {
 }
 
 void afterPenality() {
-  static unsigned long waitTime = millis();
-  if (newRound) {
-    waitTime = millis();
-    newRound = 0;
-  }
-  if (millis() - waitTime >= TR) {
+  if (timer(TR)) {
     digitalWrite(LR, LOW);
     if (penalities >= 3) {
       Serial.print("Game Over. Final Score: ");
@@ -216,12 +199,7 @@ void afterPenality() {
 }
 
 void endGame() {
-  static unsigned long waitTime = millis();
-  if (newRound) {
-    waitTime = millis();
-    newRound = 0;
-  }
-  if (millis() - waitTime >= TEG) {
+  if (timer(TEG)) {
     setState(0);
   }
 }
