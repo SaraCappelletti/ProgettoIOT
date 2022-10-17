@@ -1,20 +1,14 @@
 #include "lib.h"
 
-
-int state = 0; //0 beforegame, 1 gamestart, 2 insertion, 3 control
+bool hasPenality = false;
+int state = 0;
 int leds[4] = {LG1, LG2, LG3, LG4};
 int buttons[4] = {B1, B2, B3, B4};
 int score = 0;
 int penalities = 0;
-//int t2 = 3000;
-//int t3 = 3000;
-int tr = 1000;
 int f = 100;
-int preSleepTime = 10000;
-int fadeTime = 20;
-int fadeAmount = 5;
 int currentIntensity = 0;
-bool hasPenality = false;
+int fadeAmount = 5;
 int prevLeds[4] = {LOW, LOW, LOW, LOW};
 int pressButt[4] = {LOW, LOW, LOW, LOW};
 int newRound = 1;
@@ -22,14 +16,10 @@ int newSleep = 1;
 
 void setup() {
   Serial.begin(9600);
-  pinMode(B1, INPUT);
-  pinMode(B2, INPUT);
-  pinMode(B3, INPUT);
-  pinMode(B4, INPUT);
-  pinMode(LG1, OUTPUT);
-  pinMode(LG2, OUTPUT);
-  pinMode(LG3, OUTPUT);
-  pinMode(LG4, OUTPUT);
+  for (int i = 0; i < 4; i++) {
+    pinMode(buttons[i], INPUT);
+    pinMode(leds[i], OUTPUT);
+  }
   pinMode(LR, OUTPUT);
   randomSeed(analogRead(5));
   setInterrupts();
@@ -37,87 +27,47 @@ void setup() {
 
 void loop() {
   switch (state) {
-    case 0:{
+    case 0: {
       initialState();
       break;
     }
-    case 1:{
-      fadingRed(fadeTime);
+    case 1: {
+      fadingRed();
       setDifficulty();
-      waitForPlayer(preSleepTime);
+      waitForPlayer();
       break;
     }
-    case 2:{
+    case 2: {
       startGame();
       break;
     }
-    case 3:{
+    case 3: {
       runGame();
       break;
     }
-    case 4:{
+    case 4: {
       waitAndHidePattern();
       break;
     }
-    case 5:{
+    case 5: {
       inputFromButton();
       break;
     }
-    case 6:{
+    case 6: {
       checkInputs();
       break;
     }
-    case 7:{
+    case 7: {
       afterPenality();
       break;
     }
-    case 8:{
+    case 8: {
       showPoint();
       break;
     }
-    case 9:{
+    case 9: {
       endGame();
       break;
     }
   }
-
-
-
-  
-  /*if(state == 1){
-    turnOffLeds(leds);
-    digitalWrite(LR, LOW);
-
-    for(int i = 0; i < 4; i++){
-      if(random(0, 2) == 0){
-        digitalWrite(leds[i], HIGH);
-        prevleds[i] = HIGH;
-      }
-    }
-    state = 1;
-    time = millis();
-  }
-  //stato = inserimento pattern
-  if(state == 1 && millis() - time >= t2){
-    //turnOffLeds(leds);
-    for (int i = 0; i < 4; i++){
-      digitalWrite(leds[i], LOW);
-    }
-    state = 2;
-    time = millis();
-  }
-
-  if(state == 2 && millis() - time >= t3){
-    //turnOffLeds(leds);
-    for (int i = 0; i < 4; i++){
-      if(prevleds[i] != digitalRead(buttons[i])){
-        penalities++;
-      }
-    }
-    if(penalities){
-      digitalWrite(LR, HIGH);
-      Serial.println("Penality!");
-      time = millis();
-    }
-  }*/
 }
