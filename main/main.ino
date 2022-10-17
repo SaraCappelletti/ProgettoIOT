@@ -14,10 +14,9 @@ int preSleepTime = 10000;
 int fadeTime = 20;
 int fadeAmount = 5;
 int currentIntensity = 0;
-unsigned long time = 0;
+bool hasPenality = false;
 int prevLeds[4] = {LOW, LOW, LOW, LOW};
 int pressButt[4] = {LOW, LOW, LOW, LOW};
-
 int newRound = 1;
 int newSleep = 1;
 
@@ -39,21 +38,6 @@ void setup() {
 void loop() {
   switch (state) {
     case 0:{
-
-      Serial.print("SCORE ");
-      Serial.println(score);
-
-      Serial.print("PENALITIES ");
-      Serial.println(penalities);
-
-      Serial.println("PREV_LEDS ");
-      for (int i = 0; i < 4; i++)
-        Serial.println(prevLeds[i]);
-
-      Serial.println("PRESSED_BUTTS ");
-      for (int i = 0; i < 4; i++)
-        Serial.println(pressButt[i]);
-
       initialState();
       break;
     }
