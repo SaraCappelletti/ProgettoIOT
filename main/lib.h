@@ -50,6 +50,8 @@ void showPoint();
 
 void checkInputs();
 
+void afterPenality();
+
 void endGame();
 
 void check();

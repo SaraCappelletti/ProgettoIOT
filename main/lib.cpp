@@ -34,7 +34,6 @@ void setInterrupts(){
 void setDifficulty(){
   int L = (analogRead(POT) / 256) + 1; // L is the newDiff and assume values between 1 and 4
   if(f != L * 100){
-    Serial.println(L);
     f = L * 100;
   }
 }
@@ -180,13 +179,7 @@ void penality(){
   }
   Serial.print("Penality N.");
   Serial.println(penalities);
-  delayMicroseconds(1000000);
-  digitalWrite(LR, LOW);
-  if(penalities >= 3){
-    setState(8);
-  } else {
-    setState(3);
-  }
+  setState(7);
 }
 
 void showPoint(){
@@ -206,19 +199,34 @@ void checkInputs(){
       return;
     }
   }
-  setState(state + 1);
+  setState(8);
+}
+
+void afterPenality(){
+  static unsigned long waitTime = millis();
+  if(newRound){
+    waitTime = millis();
+    newRound = 0;
+  }
+  if(millis() - waitTime >= 1000){
+    digitalWrite(LR, LOW);
+    if(penalities >= 3){
+      Serial.print("Game Over. Final Score: ");
+      Serial.println(score);
+      setState(9);
+    } else {
+      setState(3);
+    }
+  }
 }
 
 void endGame(){
-  static unsigned long waitTime = micros();
-  Serial.print("Game Over. Final Score: ");
-  Serial.println(score);
+  static unsigned long waitTime = millis();
   if(newRound){
-    waitTime = micros();
+    waitTime = millis();
     newRound = 0;
   }
-  Serial.println(micros()-waitTime);
-  if(micros() - waitTime >= 5000000){
+  if(millis() - waitTime >= 10000){
     setState(0);
   }
 }
@@ -243,9 +251,6 @@ void check(){
         }
       }
     }
-    /*else {
-      penality();
-    }*/
   }
 }
 

@@ -68,10 +68,14 @@ void loop() {
       break;
     }
     case 7:{
-      showPoint();
+      afterPenality();
       break;
     }
     case 8:{
+      showPoint();
+      break;
+    }
+    case 9:{
       endGame();
       break;
     }
